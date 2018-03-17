@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.RatingBar;
 import com.example.tijana.contactapplication.R;
 import com.example.tijana.contactapplication.db.Contact;
 import com.example.tijana.contactapplication.db.DatabaseHelper;
+import com.example.tijana.contactapplication.fragment.DIalogTimeFragment;
 import com.example.tijana.contactapplication.receiver.ContactReceiver;
 import com.j256.ormlite.dao.Dao;
 
@@ -35,6 +37,8 @@ public class AddContactActivity extends AppCompatActivity {
     private Contact contact = null;
     private ImageView preview;
     private String imagePath = null;
+
+    private DIalogTimeFragment dialog;
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -81,8 +85,8 @@ public class AddContactActivity extends AppCompatActivity {
             contactSurname.setText(contact.getmSurname());
             EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
             contactAdress.setText(contact.getmAdress());
-            EditText contactBirthday = (EditText) findViewById(R.id.add_contact_edit_birthday);
-            contactBirthday.setText(contact.getmBirthday());
+
+
 
             //! Must, must, must!!!
             if (imagePath == null) {
@@ -114,7 +118,7 @@ public class AddContactActivity extends AppCompatActivity {
         EditText contactName = (EditText) findViewById(R.id.add_contact_edit_name);
         EditText contactSurname = (EditText) findViewById(R.id.add_contact_edit_surname);
         EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
-        EditText contactBirthday = (EditText) findViewById(R.id.add_contact_edit_birthday);
+
 
         DatabaseHelper helper = new DatabaseHelper(this);
 
@@ -131,7 +135,8 @@ public class AddContactActivity extends AppCompatActivity {
             contactDB.setmName(contactName.getText().toString());
             contactDB.setmSurname(contactSurname.getText().toString());
             contactDB.setmAdress(contactAdress.getText().toString());
-            contactDB.setmBirthday(contactBirthday.getText().toString());
+            contactDB.setmBirthday(dialog.getHourOfDay() + ":" + dialog.getMinute());
+
             contactDB.setmImage(imagePath);
 
             try {
@@ -149,7 +154,7 @@ public class AddContactActivity extends AppCompatActivity {
             contactDB.setmName(contactName.getText().toString());
             contactDB.setmSurname(contactSurname.getText().toString());
             contactDB.setmAdress(contactAdress.getText().toString());
-            contactDB.setmBirthday(contactBirthday.getText().toString());
+            contactDB.setmBirthday(dialog.getHourOfDay() + ":" + dialog.getMinute());
 
             contactDB.setmImage(imagePath);
 
@@ -161,7 +166,7 @@ public class AddContactActivity extends AppCompatActivity {
         }
 
         Intent i = new Intent(ContactReceiver.HAPPY_BIRTHDAY);
-        i.putExtra(ContactReceiver.BIRTHDAY, contactBirthday.getText().toString());
+        i.putExtra(ContactReceiver.BIRTHDAY, dialog.getHourOfDay() + ":" + dialog.getMinute());
         i.putExtra(ContactReceiver.BIRTHDAY_NAME, contactName.getText().toString());
         sendBroadcast(i);
 
@@ -240,6 +245,12 @@ public class AddContactActivity extends AppCompatActivity {
             }
             return null;
         }
+
+    }
+
+    public void onShowDialog(View view) {
+        dialog = new DIalogTimeFragment();
+        dialog.show(getSupportFragmentManager(), "tag_name");
 
     }
 

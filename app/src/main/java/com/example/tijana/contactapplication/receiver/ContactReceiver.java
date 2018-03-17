@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.example.tijana.contactapplication.activities.HappyBirthdayActivity;
 
+import java.sql.Date;
+import java.util.Calendar;
+
 import static java.lang.Thread.sleep;
 
 public class ContactReceiver extends BroadcastReceiver {
@@ -42,8 +45,22 @@ public class ContactReceiver extends BroadcastReceiver {
         @Override
         protected String doInBackground(String... strings) {
 
-            int x = Integer.parseInt(strings[0]);
+            //! Use this to get current hour and minute
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(System.currentTimeMillis());
+            int currentH = c.get(Calendar.HOUR_OF_DAY);
+            int currentM = c.get(Calendar.MINUTE);
 
+            //! Get birthday hour and minute
+            String birthdayValues[] = strings[0].split(":");
+
+            //! Calculate when to display message
+            int x = (Integer.parseInt(birthdayValues[0]) - currentH) * 60 +
+                    Integer.parseInt(birthdayValues[1]) - currentM;
+
+            if(x < 0){
+                return null;
+            }
 
             Log.i("TAG", "Start " + strings[0] + " " + strings[1]);
 
