@@ -88,6 +88,9 @@ public class DetailActivity extends AppCompatActivity {
         TextView contactAdress = (TextView) findViewById(R.id.detail_adress);
         contactAdress.setText(contact.getmAdress());
 
+        TextView contactBirthday = (TextView) findViewById(R.id.detail_birthday);
+        contactBirthday.setText(contact.getmBirthday());
+
         listView = (ListView) findViewById(R.id.list_of_phone_numbers);
 
         ArrayList<String> numberList = new ArrayList<>();

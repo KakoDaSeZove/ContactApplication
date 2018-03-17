@@ -21,6 +21,7 @@ import android.widget.RatingBar;
 import com.example.tijana.contactapplication.R;
 import com.example.tijana.contactapplication.db.Contact;
 import com.example.tijana.contactapplication.db.DatabaseHelper;
+import com.example.tijana.contactapplication.receiver.ContactReceiver;
 import com.j256.ormlite.dao.Dao;
 
 import java.io.File;
@@ -80,6 +81,8 @@ public class AddContactActivity extends AppCompatActivity {
             contactSurname.setText(contact.getmSurname());
             EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
             contactAdress.setText(contact.getmAdress());
+            EditText contactBirthday = (EditText) findViewById(R.id.add_contact_edit_birthday);
+            contactBirthday.setText(contact.getmBirthday());
 
             //! Must, must, must!!!
             if (imagePath == null) {
@@ -111,6 +114,7 @@ public class AddContactActivity extends AppCompatActivity {
         EditText contactName = (EditText) findViewById(R.id.add_contact_edit_name);
         EditText contactSurname = (EditText) findViewById(R.id.add_contact_edit_surname);
         EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
+        EditText contactBirthday = (EditText) findViewById(R.id.add_contact_edit_birthday);
 
         DatabaseHelper helper = new DatabaseHelper(this);
 
@@ -122,11 +126,12 @@ public class AddContactActivity extends AppCompatActivity {
         }
 
         if (getIntent().getExtras() == null) {
-
+//Ovo je novi contact
             Contact contactDB = new Contact();
             contactDB.setmName(contactName.getText().toString());
             contactDB.setmSurname(contactSurname.getText().toString());
             contactDB.setmAdress(contactAdress.getText().toString());
+            contactDB.setmBirthday(contactBirthday.getText().toString());
             contactDB.setmImage(imagePath);
 
             try {
@@ -136,7 +141,7 @@ public class AddContactActivity extends AppCompatActivity {
             }
 
         } else {
-
+//Ovo je edit contact
             Integer contactNo = (Integer) getIntent().getExtras().get(EXTRA_NO);
 
             Contact contactDB = new Contact();
@@ -144,6 +149,8 @@ public class AddContactActivity extends AppCompatActivity {
             contactDB.setmName(contactName.getText().toString());
             contactDB.setmSurname(contactSurname.getText().toString());
             contactDB.setmAdress(contactAdress.getText().toString());
+            contactDB.setmBirthday(contactBirthday.getText().toString());
+
             contactDB.setmImage(imagePath);
 
             try {
@@ -152,6 +159,12 @@ public class AddContactActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        Intent i = new Intent(ContactReceiver.HAPPY_BIRTHDAY);
+        i.putExtra(ContactReceiver.BIRTHDAY, contactBirthday.getText().toString());
+        i.putExtra(ContactReceiver.BIRTHDAY_NAME, contactName.getText().toString());
+        sendBroadcast(i);
+
         finish();
     }
 

@@ -19,6 +19,7 @@ public class Contact {
     public static final String FIELD_NAME_ADRESS   = "adress";
     public static final String FIELD_NAME_PHONE_NUMBERS = "phone_numbers";
     public static final String FIELD_NAME_IMAGE = "image";
+    public static final String FIELD_NAME_BIRTHDAY = "birthday";
 
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int mId;
@@ -34,6 +35,9 @@ public class Contact {
 
     @DatabaseField(columnName = FIELD_NAME_IMAGE)
     private String mImage;
+
+    @DatabaseField(columnName = FIELD_NAME_BIRTHDAY)
+    private String mBirthday;
 
     @ForeignCollectionField(columnName = FIELD_NAME_PHONE_NUMBERS, eager = true)
     private ForeignCollection<PhoneNumber> mPhoneNumber;
@@ -79,6 +83,14 @@ public class Contact {
 
     public void setmImage(String mImage) {
         this.mImage = mImage;
+    }
+
+    public String getmBirthday() {
+        return mBirthday;
+    }
+
+    public void setmBirthday(String mBirthday) {
+        this.mBirthday = mBirthday;
     }
 
     public ForeignCollection<PhoneNumber> getmPhoneNumber() {

@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static String DATABASE_NAME = "myContact.db";
-    public static int DATABASE_VERSION = 2;
+    public static int DATABASE_VERSION = 3;
 
     private Dao<Contact, Integer> mContactDao = null;
     private Dao<PhoneNumber, Integer> mNumberDao = null;

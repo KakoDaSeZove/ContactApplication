@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -32,6 +33,7 @@ import com.example.tijana.contactapplication.R;
 import com.example.tijana.contactapplication.db.Contact;
 import com.example.tijana.contactapplication.db.DatabaseHelper;
 
+import com.example.tijana.contactapplication.receiver.ContactReceiver;
 import com.j256.ormlite.dao.Dao;
 
 
@@ -50,10 +52,18 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int SELECT_PICTURE = 1;
 
+    private ContactReceiver contactReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        contactReceiver = new ContactReceiver();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ContactReceiver.HAPPY_BIRTHDAY);
+        registerReceiver(contactReceiver, filter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -116,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+        Intent i = new Intent(this, ContactService.class);
+        startService(i);
     }
 
 

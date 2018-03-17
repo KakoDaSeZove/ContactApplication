@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/detail_name"
-                    android:padding="20dp"/>
+                    android:padding="15dp"/>
 
                 <TextView
                     android:id="@+id/detail_name"
@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/detail_surname"
-                    android:padding="20dp"/>
+                    android:padding="15dp"/>
 
                 <TextView
                     android:id="@+id/detail_surname"
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/detail_adress"
-                    android:padding="20dp"/>
+                    android:padding="15dp"/>
 
                 <TextView
                     android:id="@+id/detail_adress"
@@ -95,6 +95,27 @@
                     android:layout_weight="1" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/detail_birthday"
+                    android:padding="15dp"/>
+
+                <TextView
+                    android:id="@+id/detail_birthday"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
