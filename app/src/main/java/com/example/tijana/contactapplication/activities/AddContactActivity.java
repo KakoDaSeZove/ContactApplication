@@ -1,23 +1,24 @@
 package com.example.tijana.contactapplication.activities;
 
+import static com.example.tijana.contactapplication.activities.DetailActivity.EXTRA_NO;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 
 import com.example.tijana.contactapplication.R;
 import com.example.tijana.contactapplication.db.Contact;
@@ -28,8 +29,6 @@ import com.j256.ormlite.dao.Dao;
 
 import java.io.File;
 import java.sql.SQLException;
-
-import static com.example.tijana.contactapplication.activities.DetailActivity.EXTRA_NO;
 
 public class AddContactActivity extends AppCompatActivity {
 
@@ -46,6 +45,13 @@ public class AddContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
+
+        //! Clean saved preferences
+        SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+        editor.remove("contactName");
+        editor.remove("contactSurname");
+        editor.remove("contactAdress");
+        editor.commit();
     }
 
     @Override
@@ -59,6 +65,28 @@ public class AddContactActivity extends AppCompatActivity {
         }
 
         preview = (ImageView) findViewById(R.id.add_contact_edit_image);
+
+        //! Read data from preferences saved on onPause function
+
+        EditText contactName = (EditText) findViewById(R.id.add_contact_edit_name);
+        EditText contactSurname = (EditText) findViewById(R.id.add_contact_edit_surname);
+        EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String contactNameStr = sharedPref.getString("contactName", null);
+        if (contactNameStr != null) {
+            contactName.setText(contactNameStr);
+        }
+
+        String contactSurnameStr = sharedPref.getString("contactSurname", null);
+        if (contactSurnameStr != null) {
+            contactSurname.setText(contactSurnameStr);
+        }
+
+        String contactAdressStr = sharedPref.getString("contactAdress", null);
+        if (contactAdressStr != null) {
+            contactAdress.setText(contactAdressStr);
+        }
 
         if (getIntent().getExtras() != null) {
             //! We are performing update action
@@ -79,14 +107,18 @@ public class AddContactActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            EditText contactName = (EditText) findViewById(R.id.add_contact_edit_name);
-            contactName.setText(contact.getmName());
-            EditText contactSurname = (EditText) findViewById(R.id.add_contact_edit_surname);
-            contactSurname.setText(contact.getmSurname());
-            EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
-            contactAdress.setText(contact.getmAdress());
+            //! Use value from database instead from previous dialog
+            if(contactNameStr == null){
+                contactName.setText(contact.getmName());
+            }
 
+            if(contactSurnameStr == null){
+                contactSurname.setText(contact.getmSurname());
+            }
 
+            if(contactAdressStr == null){
+                contactAdress.setText(contact.getmAdress());
+            }
 
             //! Must, must, must!!!
             if (imagePath == null) {
@@ -111,6 +143,21 @@ public class AddContactActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        EditText contactName = (EditText) findViewById(R.id.add_contact_edit_name);
+        EditText contactSurname = (EditText) findViewById(R.id.add_contact_edit_surname);
+        EditText contactAdress = (EditText) findViewById(R.id.add_contact_edit_adress);
+
+        SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+        editor.putString("contactName", contactName.getText().toString());
+        editor.putString("contactSurname", contactSurname.getText().toString());
+        editor.putString("contactAdress", contactAdress.getText().toString());
+        editor.commit();
     }
 
     public void onClickOK(View v) {
@@ -154,8 +201,13 @@ public class AddContactActivity extends AppCompatActivity {
             contactDB.setmName(contactName.getText().toString());
             contactDB.setmSurname(contactSurname.getText().toString());
             contactDB.setmAdress(contactAdress.getText().toString());
-            contactDB.setmBirthday(dialog.getHourOfDay() + ":" + dialog.getMinute());
-
+            if(dialog == null){
+                //! if user doesn't enter data and time dialog is null
+                //! Use previous value from database
+                contactDB.setmBirthday(contact.getmBirthday());
+            } else {
+                contactDB.setmBirthday(dialog.getHourOfDay() + ":" + dialog.getMinute());
+            }
             contactDB.setmImage(imagePath);
 
             try {
@@ -165,10 +217,15 @@ public class AddContactActivity extends AppCompatActivity {
             }
         }
 
-        Intent i = new Intent(ContactReceiver.HAPPY_BIRTHDAY);
-        i.putExtra(ContactReceiver.BIRTHDAY, dialog.getHourOfDay() + ":" + dialog.getMinute());
-        i.putExtra(ContactReceiver.BIRTHDAY_NAME, contactName.getText().toString());
-        sendBroadcast(i);
+        if(dialog == null) {
+            //! if user doesn't enter data and time dialog is null
+            //! Don't start new birthday task
+        } else{
+            Intent i = new Intent(ContactReceiver.HAPPY_BIRTHDAY);
+            i.putExtra(ContactReceiver.BIRTHDAY, dialog.getHourOfDay() + ":" + dialog.getMinute());
+            i.putExtra(ContactReceiver.BIRTHDAY_NAME, contactName.getText().toString());
+            sendBroadcast(i);
+        }
 
         finish();
     }
